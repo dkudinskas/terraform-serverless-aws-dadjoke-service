@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     # Replace this with your bucket name!
-    bucket = "ncsc-state-bucket"
+    bucket = "terraform-state-bucket"
     key    = "global/s3/terraform.tfstate"
     region = "eu-west-1"
   }
