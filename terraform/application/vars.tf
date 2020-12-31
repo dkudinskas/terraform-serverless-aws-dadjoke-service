@@ -12,3 +12,8 @@ variable "app_version" {
   type    = string
   default = "1.0.0"
 }
+
+variable "aws_account_id" {
+  type    = string
+  default = "946303025648"
+}

@@ -5,10 +5,15 @@ variable "aws_region" {
 
 variable "app_name" {
   type    = string
-  default = "dadjokeservice"
+  default = "random-dadjoke-service"
 }
 
 variable "app_version" {
   type    = string
   default = "1.0.0"
+}
+
+variable "aws_account_id" {
+  type    = string
+  default = "946303025648"
 }

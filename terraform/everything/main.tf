@@ -1,10 +1,10 @@
 terraform {
-  backend "s3" {
-    # Replace this with your bucket name!
-    bucket = "ncsc-state-bucket"
-    key    = "global/s3/terraform.tfstate"
-    region = "eu-west-1"
-  }
+//  backend "s3" {
+//    # Replace this with your bucket name!
+//    bucket = "ncsc-state-bucket"
+//    key    = "global/s3/terraform.tfstate"
+//    region = "eu-west-1"
+//  }
   required_providers {
     aws = {
       source = "hashicorp/aws"
@@ -18,26 +18,26 @@ provider "aws" {
 }
 
 
-resource "aws_lambda_function" "lambda_function" {
-   function_name = var.app_name
+resource "aws_lambda_function" "dadjoke_lambda" {
+  function_name = var.app_name
 
-   # The bucket name as created earlier with "aws s3api create-bucket"
-   s3_bucket = "terraform-serverless-example"
-   s3_key    = "v1.0.0/example.zip"
+  # the deployments go here
+  s3_bucket = var.app_name
+  s3_key    = "${var.app_name}/v1.0.0/${var.app_name}.zip"
 
-   # "main" is the filename within the zip file (main.js) and "handler"
-   # is the name of the property under which the handler function was
-   # exported in that file.
-   handler = "main.handler"
-   runtime = "nodejs10.x"
+  # "main" is the filename within the zip file (main.js) and "handler"
+  # is the name of the property under which the handler function was
+  # exported in that file.
+  handler = "main.handler"
+  runtime = "nodejs10.x"
 
-   role = aws_iam_role.lambda_exec.arn
+  role = aws_iam_role.dadjoke_lambda_execution_role.arn
 }
 
  # IAM role which dictates what other AWS services the Lambda function
  # may access.
-resource "aws_iam_role" "lambda_exec" {
-   name = "serverless_example_lambda"
+resource "aws_iam_role" "dadjoke_lambda_execution_role" {
+   name = "dadjoke_lambda_execution_role"
 
    assume_role_policy = <<EOF
 {
@@ -57,69 +57,52 @@ EOF
 
 }
 
-resource "aws_api_gateway_rest_api" "example" {
-  name        = "ServerlessExample"
-  description = "Terraform Serverless Application Example"
+resource "aws_api_gateway_rest_api" "dadjoke_apigateway" {
+  name        = "dadjoke_apigateway"
+  description = "REST API apigateway to serve a random dad joke"
 }
 
-resource "aws_api_gateway_resource" "proxy" {
-   rest_api_id = aws_api_gateway_rest_api.example.id
-   parent_id   = aws_api_gateway_rest_api.example.root_resource_id
-   path_part   = "{proxy+}"
+resource "aws_api_gateway_resource" "dadjoke_apigateway_resource" {
+  rest_api_id = aws_api_gateway_rest_api.dadjoke_apigateway.id
+  parent_id   = aws_api_gateway_rest_api.dadjoke_apigateway.root_resource_id
+  path_part   = "dadjoke"
 }
 
-resource "aws_api_gateway_method" "proxy" {
-   rest_api_id   = aws_api_gateway_rest_api.example.id
-   resource_id   = aws_api_gateway_resource.proxy.id
-   http_method   = "ANY"
+resource "aws_api_gateway_method" "dadjoke_apigateway_get_method" {
+   rest_api_id   = aws_api_gateway_rest_api.dadjoke_apigateway.id
+   resource_id   = aws_api_gateway_resource.dadjoke_apigateway_resource.id
+   http_method   = "GET"
    authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "lambda" {
-   rest_api_id = aws_api_gateway_rest_api.example.id
-   resource_id = aws_api_gateway_method.proxy.resource_id
-   http_method = aws_api_gateway_method.proxy.http_method
+
+
+resource "aws_api_gateway_integration" "dadjoke_apigateway_lambda_integration" {
+   rest_api_id = aws_api_gateway_rest_api.dadjoke_apigateway.id
+   resource_id = aws_api_gateway_method.dadjoke_apigateway_get_method.resource_id
+   http_method = aws_api_gateway_method.dadjoke_apigateway_get_method.http_method
 
    integration_http_method = "POST"
    type                    = "AWS_PROXY"
-   uri                     = aws_lambda_function.example.invoke_arn
-}
-
-resource "aws_api_gateway_method" "proxy_root" {
-   rest_api_id   = aws_api_gateway_rest_api.example.id
-   resource_id   = aws_api_gateway_rest_api.example.root_resource_id
-   http_method   = "ANY"
-   authorization = "NONE"
-}
-
-resource "aws_api_gateway_integration" "lambda_root" {
-   rest_api_id = aws_api_gateway_rest_api.example.id
-   resource_id = aws_api_gateway_method.proxy_root.resource_id
-   http_method = aws_api_gateway_method.proxy_root.http_method
-
-   integration_http_method = "POST"
-   type                    = "AWS_PROXY"
-   uri                     = aws_lambda_function.example.invoke_arn
+   uri                     = aws_lambda_function.dadjoke_lambda.invoke_arn
 }
 
 resource "aws_api_gateway_deployment" "example" {
-   depends_on = [
-     aws_api_gateway_integration.lambda,
-     aws_api_gateway_integration.lambda_root,
-   ]
+  depends_on = [
+    aws_api_gateway_integration.dadjoke_apigateway_lambda_integration
+  ]
 
-   rest_api_id = aws_api_gateway_rest_api.example.id
-   stage_name  = "test"
+  rest_api_id = aws_api_gateway_rest_api.dadjoke_apigateway.id
+  stage_name  = "test"
 }
 
 
 resource "aws_lambda_permission" "apigw" {
-   statement_id  = "AllowAPIGatewayInvoke"
-   action        = "lambda:InvokeFunction"
-   function_name = aws_lambda_function.example.function_name
-   principal     = "apigateway.amazonaws.com"
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.dadjoke_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
 
-   # The "/*/*" portion grants access from any method on any resource
-   # within the API Gateway REST API.
-   source_arn = "${aws_api_gateway_rest_api.example.execution_arn}/*/*"
+//  source_arn = "${aws_api_gateway_rest_api.dadjoke_apigateway.execution_arn}/*/*"
+  source_arn = "arn:aws:execute-api:${var.aws_region}:${var.aws_account_id}:${aws_api_gateway_rest_api.dadjoke_apigateway.id}/*/${aws_api_gateway_method.dadjoke_apigateway_get_method.http_method}${aws_api_gateway_resource.dadjoke_apigateway_resource.path}"
 }

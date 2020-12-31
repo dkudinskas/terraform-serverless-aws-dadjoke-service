@@ -26,21 +26,13 @@ module "lambda" {
   source = "./modules/lambda"
   app_name = var.app_name
   app_version = var.app_version
-  apigw_execution_arn = module.apigateway.apigw_execution_arn
 }
 
 module "apigateway" {
   source = "./modules/apigateway"
   app_name = var.app_name
-  lambda_arn = module.lambda.lambda_arn
-}
-
-module "apigateway_lambda_integration" {
-  source = "./modules/apigateway-lambda-integration"
-  api_gateway_for_lambda_id = module.apigateway.apigw_id
-  app_name = var.app_name
-  environment = "test"
-  lambda_arn = module.lambda.lambda_arn
-  proxy_resource_id = module.apigateway.apigw_proxy_resource_id
-  proxy_root_resource_id = module.apigateway.apigw_proxy_root_resource_id
+  aws_account_id = var.aws_account_id
+  aws_region = var.aws_region
+  lambda_function_arn = module.lambda.lambda_arn
+  lambda_function_name = module.lambda.lambda_name
 }
