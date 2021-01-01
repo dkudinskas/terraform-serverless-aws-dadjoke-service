@@ -1,3 +1,6 @@
+# ignore lambda zip file, its build on the fly 
+*.zip
+
 # idea IDE files
 .idea
 

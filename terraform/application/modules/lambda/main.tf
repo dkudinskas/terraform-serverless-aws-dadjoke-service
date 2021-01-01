@@ -17,7 +17,7 @@ resource "aws_lambda_function" "lambda_function" {
   function_name = var.app_name
 
   s3_bucket = "${var.app_name}-deployments"
-  s3_key    = "${var.app_name}/v${var.app_version}/${var.app_name}.zip"
+  s3_key    = "v${var.app_version}/${var.app_name}.zip"
 
   handler = "main.handler"
   runtime = "nodejs10.x"

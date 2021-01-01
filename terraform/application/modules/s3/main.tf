@@ -4,8 +4,7 @@ terraform {
 
 locals {
   src-dir    = "../../lambda/${var.app_name}"
-  build-dir  = "${local.src-dir}/build"
-  build-file = "${local.build-dir}/${var.app_name}.zip"
+  build-file = "${local.src-dir}/build/${var.app_name}.zip"
 }
 
 resource "aws_s3_bucket" "terraform_deployment_bucket" {
@@ -27,6 +26,6 @@ resource "aws_s3_bucket" "terraform_deployment_bucket" {
   }
 
   provisioner "local-exec" {
-    command = "zip ${local.build-file} ${local.src-dir}/main.js && aws s3 cp ${local.build-file} s3://${var.app_name}-deployments/v1.0.0/${var.app_name}.zip"
+    command = "cd ${local.src-dir} && zip build/${var.app_name}.zip main.js && aws s3 cp ${local.build-file} s3://${var.app_name}-deployments/v${var.app_version}/${var.app_name}.zip && cd -"
   }
 }

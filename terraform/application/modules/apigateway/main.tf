@@ -21,13 +21,13 @@ resource "aws_api_gateway_method" "apigw_method" {
 }
 
 resource "aws_api_gateway_integration" "apigw_integration" {
-   rest_api_id = aws_api_gateway_rest_api.apigw.id
-   resource_id = aws_api_gateway_method.apigw_method.resource_id
-   http_method = aws_api_gateway_method.apigw_method.http_method
+  rest_api_id = aws_api_gateway_rest_api.apigw.id
+  resource_id = aws_api_gateway_method.apigw_method.resource_id
+  http_method = aws_api_gateway_method.apigw_method.http_method
 
-   integration_http_method = "POST"
-   type                    = "AWS_PROXY"
-   uri                     = var.lambda_function_arn
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = var.lambda_function_arn
 }
 
 resource "aws_api_gateway_deployment" "apigw_deployment" {
