@@ -15,5 +15,4 @@ variable "app_version" {
 
 variable "aws_account_id" {
   type    = string
-  default = "946303025648"
 }
