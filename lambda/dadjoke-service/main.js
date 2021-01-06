@@ -27,9 +27,10 @@ function scanCallback(err, data) {
 }
 
 function getParams() {
+  const dbTable = process.env.DATABASE_NAME;
   return {
     AttributesToGet: [ "dadjoke" ],
-    TableName: "random-dadjoke-service",
+    TableName: DATABASE_NAME,
     Limit: 1,
   };
 }

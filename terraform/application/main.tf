@@ -10,7 +10,6 @@ terraform {
       source = "hashicorp/aws"
     }
   }
-
 }
 
 provider "aws" {
@@ -27,6 +26,7 @@ module "lambda" {
   source = "./modules/lambda"
   app_name = var.app_name
   app_version = var.app_version
+  aws_ddb_table = var.aws_ddb_table
   depends_on = [ module.s3 ]
 }
 
