@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_state_bucket" {
-  bucket = "random-dadjoke-service-state-bucket"
+  bucket = "${var.app_name}-state-bucket"
   # Enable versioning so we can see the full revision history of our state files
   versioning {
     enabled = true

@@ -24,8 +24,12 @@ resource "aws_s3_bucket" "terraform_deployment_bucket" {
       }
     }
   }
+}
 
-  provisioner "local-exec" {
-    command = "cd ${local.src-dir} && zip ${var.app_name}.zip main.js && aws s3 cp ${local.build-file} s3://${var.app_name}-deployments/v${var.app_version}/${var.app_name}.zip && cd -"
-  }
+resource "aws_s3_bucket_object" "lambda_zip" {
+  bucket = aws_s3_bucket.terraform_deployment_bucket.id
+  key    = "v${var.app_version}/${var.app_name}.zip"
+//  acl    = "private"
+  source = "../../lambda/dadjoke-service/dadjoke-service.zip"
+  etag = filebase64("../../lambda/dadjoke-service/dadjoke-service.zip")
 }

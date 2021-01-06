@@ -30,7 +30,7 @@ function getParams() {
   const dbTable = process.env.DATABASE_NAME;
   return {
     AttributesToGet: [ "dadjoke" ],
-    TableName: DATABASE_NAME,
+    TableName: dbTable,
     Limit: 1,
   };
 }
@@ -54,3 +54,4 @@ function uuidv4() {
     return v.toString(16);
   });
 }
+

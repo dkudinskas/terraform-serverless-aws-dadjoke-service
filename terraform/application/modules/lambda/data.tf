@@ -24,7 +24,16 @@ data "aws_iam_policy_document" "dynamodb_ro_logs" {
       "dynamodb:Query"
     ]
     resources = [
-      "arn:aws:dynamodb:eu-west-1:946303025648:table/${var.aws_ddb_table}"
+      "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_id}:table/${var.aws_ddb_table}"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:decrypt"
+    ]
+    resources = [
+      "arn:aws:kms:${var.aws_region}:${var.aws_account_id}:key/*"
     ]
   }
 }

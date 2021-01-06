@@ -7,12 +7,6 @@ resource "aws_iam_role" "lambda_iam_role" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
-resource "aws_iam_policy_attachment" "attach-cloudwatch-policy" {
-  name       = "allow-cloudwatch-logs-access"
-  roles      = [aws_iam_role.lambda_iam_role.name]
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-}
-
 resource "aws_iam_policy" "dynamodb-read-policy" {
   name        = "dynamodb-ro-logs-policy"
   description = "Only allow only scan and query, and logs access"

@@ -2,9 +2,10 @@ terraform {
   required_version = ">= 0.13"
 
   backend "s3" {
-    # Replace this with your bucket name!
-    bucket = "random-dadjoke-service-state-bucket"
+    # Replace this with your bucket name! I cannot use variables here :/
+    bucket = "dadjoke-service-state-bucket"
     key    = "global/s3/database.tfstate"
+    # Replace this with your region! I cannot use variables here :/
     region = "eu-west-1"
   }
   required_providers {

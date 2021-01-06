@@ -5,3 +5,7 @@ variable "aws_region" {
 variable "aws_ddb_table" {
   type    = string
 }
+
+variable "app_name" {
+  type    = string
+}

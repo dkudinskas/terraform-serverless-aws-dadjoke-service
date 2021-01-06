@@ -1,8 +1,9 @@
 terraform {
   backend "s3" {
-    # Replace this with your bucket name!
-    bucket = "random-dadjoke-service-state-bucket"
+    # Replace this with your bucket name! I cannot use variables here :/
+    bucket = "dadjoke-service-state-bucket"
     key    = "global/s3/terraform.tfstate"
+    # Replace this with your region! I cannot use variables here :/
     region = "eu-west-1"
   }
   required_providers {
@@ -27,6 +28,8 @@ module "lambda" {
   app_name = var.app_name
   app_version = var.app_version
   aws_ddb_table = var.aws_ddb_table
+  aws_region = var.aws_region
+  aws_account_id = var.aws_account_id
   depends_on = [ module.s3 ]
 }
 
