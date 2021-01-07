@@ -4,6 +4,9 @@
 # idea IDE files
 .idea
 
+# i keep a local copy of config.json here
+.config.local.json
+
 # Local .terraform directories
 **/.terraform/*
 
