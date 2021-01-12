@@ -3,7 +3,8 @@
 #set -x
 
 function get_tf_var() {
-  value=$(grep -oP "(?<=\"$1\": \")[^\"]*" config.json)
+#  value=$(grep -oP "(?<=\"$1\": \")[^\"]*" config.json)
+  value=$(jq -r ".$1" config.json)
   if [ -z "$value" ]
   then
     exit 22
@@ -45,12 +46,15 @@ function deploy() {
 function deploy_all() {
   deploy "terraform/state" "$VAR_REGION" "$VAR_SERVICE_NAME"
   deploy "terraform/database" "$VAR_REGION" "$VAR_DDB_TABLE" "$VAR_SERVICE_NAME"
+  zip_lambda
   deploy "terraform/application" "$VAR_REGION" "$VAR_SERVICE_NAME" "$VAR_SERVICE_VERSION" "$VAR_ACCOUNT_ID" "$VAR_DDB_TABLE"
 }
 
 function zip_lambda() {
-  app=$(grep -oP "(?<=\"app_name\": \")[^\"]*" config.json)
-  cd lambda/"$app" && zip "$app".zip main.js && cd -
+#  app=$(grep -oP "(?<=\"app_name\": \")[^\"]*" config.json)
+  app=$(jq -r ".app_name" config.json)
+  cd lambda/"$app" && zip "$app".zip main.js 
+  cd -
 }
 
 function destroy() {
@@ -107,3 +111,4 @@ do
       echo "Invalid option in $opt"; continue;;
   esac
 done
+
